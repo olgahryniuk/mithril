@@ -283,7 +283,7 @@ mod tests {
         let decoded_sig: ProtocolSingleSignature = key_decode_hex(&sign_result.signature).unwrap();
         assert!(
             decoded_sig
-                .verify(
+                .verify_avk(
                     &protocol_parameters,
                     &current_signer.protocol_signer.verification_key(),
                     &current_signer.protocol_signer.get_stake(),
