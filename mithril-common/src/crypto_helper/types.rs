@@ -4,8 +4,8 @@ use crate::crypto_helper::cardano::{
 };
 
 use mithril_stm::stm::{
-    Index, Stake, StmAggrSig, StmAggrVerificationKey, StmClerk, StmParameters, StmSig, StmSignerAvk,
-    StmVerificationKeyPoP,
+    Index, Stake, StmAggrSig, StmAggrVerificationKey, StmClerk, StmParameters, StmSig,
+    StmSignerAvk, StmVerificationKeyPoP,
 };
 use mithril_stm::AggregationError;
 

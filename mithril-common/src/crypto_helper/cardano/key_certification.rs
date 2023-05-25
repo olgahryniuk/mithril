@@ -191,7 +191,7 @@ impl StmInitializerWrapper {
         self,
         closed_reg: ClosedKeyReg<D>,
     ) -> Result<StmSignerAvk<D>, ProtocolRegistrationErrorWrapper> {
-        Ok(self.stm_initializer.new_signer(closed_reg)?)
+        Ok(self.stm_initializer.new_signer_avk(closed_reg)?)
     }
 
     /// Convert to bytes
