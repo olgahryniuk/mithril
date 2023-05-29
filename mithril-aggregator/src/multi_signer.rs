@@ -524,7 +524,7 @@ impl MultiSigner for MultiSignerImpl {
             .get_reg_party(&signature.signer_index)
             .ok_or_else(ProtocolError::UnregisteredParty)?;
         signature
-            .verify_avk(
+            .verify(
                 &protocol_parameters,
                 &vk,
                 &stake,
