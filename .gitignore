@@ -13,3 +13,4 @@ mithril-infra/.terraform*
 mithril-infra/terraform.tfstate*
 mithril-infra/*.tfvars
 
+/mithril-stm/src/ChangeLog_FNV.md
