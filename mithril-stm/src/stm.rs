@@ -1559,7 +1559,6 @@ mod tests {
             let verify_result = FullNodeVerifier::verify(&fnv, &signatures, &params, &msg);
             assert!(verify_result.is_ok(), "verify {verify_result:?}");
 
-            // assert!(FullNodeVerifier::verify(&fnv, &signatures, &params, &msg).is_ok());
         }
     }
 
