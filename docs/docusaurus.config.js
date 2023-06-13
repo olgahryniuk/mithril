@@ -12,7 +12,7 @@ const config = {
   baseUrl: '/doc/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/logo.svg',
   organizationName: 'Input Output Global',
   projectName: 'Mithril',
 
@@ -33,7 +33,7 @@ const config = {
           path: 'root',
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: ({docPath}) => {
+          editUrl: ({ docPath }) => {
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
             return `https://github.com/input-output-hk/mithril/edit/main/docs/root/${docPath}`;
@@ -112,7 +112,7 @@ const config = {
         title: 'Mithril',
         logo: {
           alt: 'Mithril. A complete guide.',
-          src: 'img/logo.png',
+          src: 'img/logo.svg',
         },
         items: [
           {
@@ -157,10 +157,6 @@ const config = {
           {
             title: 'Contributing',
             items: [
-              {
-                label: 'Project Charter',
-                href: 'https://github.com/input-output-hk/mithril/wiki/Project-Charter',
-              },
               {
                 label: 'Contributing Guidelines',
                 href: 'https://github.com/input-output-hk/mithril/blob/main/CONTRIBUTING.md',
@@ -209,7 +205,7 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
-      markdown: {
+  markdown: {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],

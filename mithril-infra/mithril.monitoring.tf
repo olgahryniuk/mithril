@@ -1,8 +1,12 @@
 
 resource "null_resource" "mithril_monitoring" {
   depends_on = [
-    null_resource.mithril_reverse_proxy
+    null_resource.mithril_network
   ]
+
+  triggers = {
+    vm_instance = google_compute_instance.vm_instance.id
+  }
 
   connection {
     type        = "ssh"

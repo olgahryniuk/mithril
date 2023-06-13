@@ -1,30 +1,14 @@
 use cli_table::{format::Justify, Table};
-use mithril_common::entities::{Epoch, HexEncodedGenesisVerificationKey};
-use serde::{Deserialize, Serialize};
-
-/// Client configuration
-#[derive(Table, Debug, Clone, Serialize, Deserialize)]
-pub struct Config {
-    /// Cardano network
-    #[table(title = "Network")]
-    pub network: String,
-
-    /// Aggregator endpoint
-    #[table(title = "Aggregator Endpoint")]
-    pub aggregator_endpoint: String,
-
-    /// Genesis verification key
-    pub genesis_verification_key: HexEncodedGenesisVerificationKey,
-}
+use mithril_common::{
+    entities::{Epoch, Snapshot},
+    messages::MithrilStakeDistributionListItemMessage,
+};
+use serde::Serialize;
 
 /// SnapshotListItem represents a snapshot list item from an aggregator
 /// for the purpose of tabular display
 #[derive(Table, Debug, Clone, PartialEq, Eq, PartialOrd, Serialize)]
 pub struct SnapshotListItem {
-    /// Cardano network
-    #[table(title = "Network")]
-    pub network: String,
-
     /// Cardano epoch
     #[table(title = "Epoch")]
     pub epoch: Epoch,
@@ -32,6 +16,10 @@ pub struct SnapshotListItem {
     /// Cardano immutable file number
     #[table(title = "Immutable")]
     pub immutable_file_number: u64,
+
+    /// Cardano Network name
+    #[table(title = "Network")]
+    pub network: String,
 
     /// Digest that is signed by the signer participants
     #[table(title = "Digest")]
@@ -50,21 +38,35 @@ pub struct SnapshotListItem {
     pub created_at: String,
 }
 
+impl From<Snapshot> for SnapshotListItem {
+    fn from(value: Snapshot) -> Self {
+        SnapshotListItem {
+            epoch: value.beacon.epoch,
+            immutable_file_number: value.beacon.immutable_file_number,
+            network: value.beacon.network,
+            digest: value.digest,
+            size: value.size,
+            total_locations: u16::try_from(value.locations.len()).unwrap(),
+            created_at: value.created_at,
+        }
+    }
+}
+
 impl SnapshotListItem {
     /// SnapshotListItem factory
     pub fn new(
-        network: String,
         epoch: Epoch,
         immutable_file_number: u64,
+        network: String,
         digest: String,
         size: u64,
         total_locations: u16,
         created_at: String,
     ) -> SnapshotListItem {
         SnapshotListItem {
-            network,
             epoch,
             immutable_file_number,
+            network,
             digest,
             size,
             created_at,
@@ -92,6 +94,32 @@ impl SnapshotFieldItem {
         SnapshotFieldItem {
             field_name,
             field_value,
+        }
+    }
+}
+
+/// Item to display Mithril Stake Distribution lines in a table.
+#[derive(Table, Debug, Clone, PartialEq, Eq, PartialOrd, Serialize)]
+pub struct MithrilStakeDistributionListItem {
+    #[table(title = "Epoch")]
+    /// Epoch at which the Mithril Stake Distribution is created
+    pub epoch: Epoch,
+
+    #[table(title = "Hash")]
+    /// Hash of the Mithril Stake Distribution (different from the AVK).
+    pub hash: String,
+
+    #[table(title = "Certificate Hash")]
+    /// Hash of the associated certificate
+    pub certificate_hash: String,
+}
+
+impl From<MithrilStakeDistributionListItemMessage> for MithrilStakeDistributionListItem {
+    fn from(value: MithrilStakeDistributionListItemMessage) -> Self {
+        Self {
+            epoch: value.epoch,
+            hash: value.hash,
+            certificate_hash: value.certificate_hash,
         }
     }
 }

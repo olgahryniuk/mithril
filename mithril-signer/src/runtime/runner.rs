@@ -366,11 +366,7 @@ impl Runner for SignerRunner {
             .await?;
 
         // 2 set the next signers keys and stakes in the message
-        let epoch = match signed_entity_type {
-            SignedEntityType::MithrilStakeDistribution(epoch) => epoch,
-            SignedEntityType::CardanoImmutableFilesFull(beacon) => &beacon.epoch,
-            SignedEntityType::CardanoStakeDistribution(epoch) => epoch,
-        };
+        let epoch = signed_entity_type.get_epoch();
         let next_signer_retrieval_epoch = epoch.offset_to_next_signer_retrieval_epoch();
         let next_protocol_initializer = self
             .services
@@ -505,7 +501,10 @@ mod tests {
         BeaconProvider, BeaconProviderError, BeaconProviderImpl, CardanoNetwork,
     };
     use mockall::mock;
-    use std::{path::PathBuf, sync::Arc};
+    use std::{
+        path::{Path, PathBuf},
+        sync::Arc,
+    };
 
     use crate::{
         CertificateHandler, DumbCertificateHandler, MithrilSingleSigner, MockCertificateHandler,
@@ -545,9 +544,12 @@ mod tests {
 
         let api_version_provider = Arc::new(APIVersionProvider::new(era_checker.clone()));
         let digester = Arc::new(DumbImmutableDigester::new(DIGESTER_RESULT, true));
-        let cardano_immutable_signable_builder = Arc::new(
-            CardanoImmutableFilesFullSignableBuilder::new(digester.clone(), slog_scope::logger()),
-        );
+        let cardano_immutable_signable_builder =
+            Arc::new(CardanoImmutableFilesFullSignableBuilder::new(
+                digester.clone(),
+                Path::new(""),
+                slog_scope::logger(),
+            ));
         let mithril_stake_distribution_signable_builder =
             Arc::new(MithrilStakeDistributionSignableBuilder::default());
         let signable_builder_service = Arc::new(MithrilSignableBuilderService::new(

@@ -1,15 +1,16 @@
 import React, {useEffect} from 'react';
-import PendingCertificate from '../components/PendingCertificate';
-import SnapshotsList from '../components/SnapshotsList';
+import {useRouter} from "next/router";
+import {useSelector} from "react-redux";
 import Head from "next/head";
 import Image from "next/image";
-import {Col, Form, Row, Stack} from "react-bootstrap";
+import {Col, Form, Row, Stack, Tab, Tabs} from "react-bootstrap";
 import styles from "../styles/Home.module.css";
 import AggregatorSetter from "../components/AggregatorSetter";
-import {useRouter} from "next/router";
 import EpochSettings from "../components/EpochSettings";
-import {useSelector} from "react-redux";
 import IntervalSetter from "../components/IntervalSetter";
+import PendingCertificate from '../components/PendingCertificate';
+import SnapshotsList from '../components/Artifacts/SnapshotsList';
+import MithrilStakeDistributionsList from "../components/Artifacts/MithrilStakeDistributionsList";
 
 export default function Explorer() {
   const router = useRouter();
@@ -25,12 +26,14 @@ export default function Explorer() {
       <Head>
         <title>Mithril Explorer</title>
         <meta name="description" content="Explore a Mithril Network"/>
-        <link rel="icon" href="/explorer/favicon.ico"/>
+        <link rel="icon" href="/explorer/logo.svg?v=1" type="image/svg+xml"/>
       </Head>
 
       <div className={styles.container}>
         <main className={styles.main}>
-          <h1 className={styles.title}>Mithril Explorer</h1>
+          <h1 className={styles.title}>
+            <Image src="/explorer/logo.png" alt="Mithril Logo" width={55} height={55}/> Mithril Explorer
+          </h1>
           <Stack gap={3}>
             <Form>
               <Row xs={1} sm={2}>
@@ -46,7 +49,14 @@ export default function Explorer() {
                 <PendingCertificate/>
               </Col>
             </Row>
-            <SnapshotsList/>
+            <Tabs defaultActiveKey="snapshots">
+              <Tab title="Snapshots" eventKey="snapshots">
+                <SnapshotsList/>
+              </Tab>
+              <Tab title="Mithril Stake Distribution" eventKey="mithrilStakeDistribution">
+                <MithrilStakeDistributionsList/>
+              </Tab>
+            </Tabs>
           </Stack>
         </main>
       </div>

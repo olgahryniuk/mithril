@@ -128,9 +128,11 @@ jobs:
         shell: bash
         run: |
           set -o pipefail && \
-          cargo test --no-fail-fast ${{ matrix.test-args }} \
-              -- -Z unstable-options --format json --report-time \
-              | tee >(cargo2junit > test-results${{ matrix.artifact-suffix }}-${{ runner.os }}-${{ runner.arch }}.xml)
+          cargo test --no-fail-fast ${{ matrix.test-args }}
+          # TODO: Previous command that uses unstable options which are not supported anymore in stable toolchain
+          #cargo test --no-fail-fast ${{ matrix.test-args }} \
+          #    -- -Z unstable-options --format json --report-time \
+          #    | tee >(cargo2junit > test-results${{ matrix.artifact-suffix }}-${{ runner.os }}-${{ runner.arch }}.xml)
 
       - name: Upload Tests Results
         uses: actions/upload-artifact@v3
@@ -230,7 +232,9 @@ jobs:
           if-no-files-found: error
   
   publish-tests-results:
-    if: success() || failure()
+    # TODO: reactivate when cargo test errors export to json works in stable version
+    #if: success() || failure()
+    if: false
     runs-on: ubuntu-22.04
     needs: 
       - test
@@ -466,6 +470,7 @@ jobs:
           google_region: europe-west1
           google_zone: europe-west1-b
           google_machine_type: e2-highmem-4
+          google_compute_instance_data_disk_size: 250
           
     runs-on: ubuntu-22.04
 
@@ -508,6 +513,7 @@ jobs:
           google_region                           = "${{ matrix.google_region }}"
           google_zone                             = "${{ matrix.google_zone }}"
           google_machine_type                     = "${{ matrix.google_machine_type }}"
+          google_compute_instance_data_disk_size  = "${{ matrix.google_compute_instance_data_disk_size }}"
           google_service_credentials_json_file    = "./google-application-credentials.json"
           mithril_api_domain                      = "${{ matrix.mithril_api_domain }}"
           mithril_image_id                        = "${{ env.DOCKER_IMAGE_ID }}"

@@ -312,7 +312,7 @@ impl<'client> DeleteOpenMessageProvider<'client> {
 
     fn get_epoch_condition(&self, epoch: Epoch) -> WhereCondition {
         WhereCondition::new(
-            "epoch_setting_id <= ?*",
+            "epoch_setting_id < ?*",
             vec![Value::Integer(epoch.0 as i64)],
         )
     }
@@ -421,6 +421,13 @@ impl<'client> OpenMessageWithSingleSignaturesProvider<'client> {
         Self { connection }
     }
 
+    fn get_epoch_condition(&self, epoch: Epoch) -> WhereCondition {
+        WhereCondition::new(
+            "epoch_setting_id = ?*",
+            vec![Value::Integer(epoch.0 as i64)],
+        )
+    }
+
     fn get_signed_entity_type_condition(
         &self,
         signed_entity_type: &SignedEntityType,
@@ -493,14 +500,16 @@ impl OpenMessageRepository {
         Ok(messages.next())
     }
 
-    /// Return an open message with its associated single signatures if any.
+    /// Return an open message with its associated single signatures for the given Epoch and [SignedEntityType].
     pub async fn get_open_message_with_single_signatures(
         &self,
         signed_entity_type: &SignedEntityType,
     ) -> StdResult<Option<OpenMessageWithSingleSignaturesRecord>> {
         let lock = self.connection.lock().await;
         let provider = OpenMessageWithSingleSignaturesProvider::new(&lock);
-        let filters = provider.get_signed_entity_type_condition(signed_entity_type);
+        let filters = provider
+            .get_epoch_condition(signed_entity_type.get_epoch())
+            .and_where(provider.get_signed_entity_type_condition(signed_entity_type));
         let mut messages = provider.find(filters)?;
 
         Ok(messages.next())
@@ -538,7 +547,7 @@ impl OpenMessageRepository {
             .ok_or_else(|| panic!("Updating an open_message should not return nothing."))
     }
 
-    /// Remove all the [OpenMessageRecord] for the given Epoch in the database.
+    /// Remove all the [OpenMessageRecord] for the strictly previous epochs of the given epoch in the database.
     /// It returns the number of messages removed.
     pub async fn clean_epoch(&self, epoch: Epoch) -> StdResult<usize> {
         let lock = self.connection.lock().await;
@@ -703,7 +712,7 @@ mod tests {
         let provider = DeleteOpenMessageProvider::new(&connection);
         let (expr, params) = provider.get_epoch_condition(Epoch(12)).expand();
 
-        assert_eq!("epoch_setting_id <= ?1".to_string(), expr);
+        assert_eq!("epoch_setting_id < ?1".to_string(), expr);
         assert_eq!(vec![Value::Integer(12)], params,);
     }
 
